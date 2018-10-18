@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pharma_shop/pages/home_page.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 class LoginPage extends StatefulWidget {
   @override
@@ -20,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
     // TODO: implement initState
     super.initState();
 
-    FirebaseAuth.instance.currentUser().then((user) {
+    _auth.currentUser().then((user) {
       if( user != null) {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: user)));
       }
@@ -52,7 +56,15 @@ class _LoginPageState extends State<LoginPage> {
                 RaisedButton(
                   onPressed: signIn,
                   child: Text('Sign in'),
+                ),
+                SizedBox(height: 30.0,),
+                Center(child: Text("OR", style: TextStyle(fontSize: 40.0, color: Colors.amber),)),
+                SizedBox(height: 30.0,),
+                RaisedButton(
+                  onPressed: _signInGoogle,
+                  child: Text("With Google"),
                 )
+
               ],
             )
         )
@@ -123,15 +135,28 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _signInGoogle() async {
+    GoogleSignInAccount googleUser =  await _googleSignIn.signIn();
+
+    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    user = await _auth.signInWithGoogle(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: user) ));
+
+  }
+
+
+
   Future<void> signIn() async {
     final formState = _formKey.currentState;
+
 
     if(formState.validate()) {
       //TODO login to firebase
       formState.save();
 
       try {
-        user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password);
+        user = await _auth.signInWithEmailAndPassword(email: _email, password: _password);
         // TODO navigate to Home
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: user) ));
       } catch(e) {

@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Hi ${widget.user.email}"),
         actions: <Widget>[
+          IconButton(icon: Icon(Icons.shopping_cart), onPressed: (){}),
           FlatButton(
             child: Text("LogOut", style: TextStyle(color: Colors.white70),),
             onPressed: signOut
@@ -25,14 +26,30 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+                accountName: Text('${widget.user.displayName}'),
+                accountEmail: Text('${widget.user.email}'),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.green,
+                child: Image.network('${widget.user.photoUrl}'),
+              ),
+            ),
+            Text("Log out"),
+            Text("About")
+          ],
+        ),
+      ),
       body: Center(
         child: Text("All products"),
       ),
     );
   }
 
-  void signOut() {
-    FirebaseAuth.instance.signOut();
+  void signOut() async {
+    await FirebaseAuth.instance.signOut();
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 }
