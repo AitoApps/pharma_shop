@@ -1,12 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pharma_shop/pages/home_page.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = GoogleSignIn();
+import 'package:pharma_shop/auth.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -14,9 +11,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  FirebaseUser user;
-  String _email, _password;
+
+  PersonData person = new PersonData();
+  bool _autovalidate = false;
+ // bool _isLoading = false;
   bool _isObscured = true;
+  UserAuth userAuth = UserAuth();
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -24,18 +26,23 @@ class _LoginPageState extends State<LoginPage> {
     // TODO: implement initState
     super.initState();
 
-    _auth.currentUser().then((user) {
+    userAuth.currentUser().then((user) {
       if( user != null) {
+        print("user: ${user.email}");
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: user)));
+
+      } else {
+        print("user: $user");
       }
     });
+
   }
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-        body: Form(key: _formKey,
+        body: Form(key: _formKey, autovalidate: _autovalidate,
             child: ListView(
               padding: const EdgeInsets.fromLTRB(22.0, 0.0, 22.0, 22.0),
               children: <Widget>[
@@ -54,14 +61,14 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 30.0,),
                 RaisedButton(
-                  onPressed: signIn,
+                  onPressed: _handleLoginSubmitted,
                   child: Text('Sign in'),
                 ),
                 SizedBox(height: 30.0,),
                 Center(child: Text("OR", style: TextStyle(fontSize: 40.0, color: Colors.amber),)),
                 SizedBox(height: 30.0,),
                 RaisedButton(
-                  onPressed: _signInGoogle,
+                  onPressed: _handleSignInGoogle,
                   child: Text("With Google"),
                 )
 
@@ -74,15 +81,17 @@ class _LoginPageState extends State<LoginPage> {
 
 
   TextFormField buildPasswordTextField() {
+
     return TextFormField(
                 validator: (passwordInput) {
                   if(passwordInput.isEmpty) {
                     return 'Please type a password';
                   }
                 },
-                onSaved: (passwordInput) => _password = passwordInput,
+                onSaved: (passwordInput) => person.password = passwordInput,
                 decoration: InputDecoration(
                   labelText: 'Password',
+                  helperText: 'No more than 8 characters',
                   suffixIcon: IconButton(
                       icon: Icon(Icons.remove_red_eye),
                       onPressed: () {
@@ -104,7 +113,8 @@ class _LoginPageState extends State<LoginPage> {
                     return 'Please type an email';
                   }
                 },
-                onSaved: (emailInput) => _email = emailInput,
+                onSaved: (emailInput) => person.email = emailInput,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                     labelText: 'Email'
                 ),
@@ -135,45 +145,47 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _signInGoogle() async {
-    GoogleSignInAccount googleUser =  await _googleSignIn.signIn();
+  void _handleSignInGoogle() {
 
-    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    userAuth.signInWithGoogle().then((user) {
+      print("login successfully");
 
-    user = await _auth.signInWithGoogle(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: user) ));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: user)));
+
+    }).catchError((e) {
+      print("error:${e.toString()}");
+    });
 
   }
 
 
+  void _handleLoginSubmitted()  {
+    final FormState formState = _formKey.currentState;
 
-  Future<void> signIn() async {
-    final formState = _formKey.currentState;
-
-
-    if(formState.validate()) {
-      //TODO login to firebase
+    if (!formState.validate()) {
+      //showInSnackBar('Please fix the errors in red before submitting.');
+      print('Please fix the errors in red before submitting.');
+    } else {
       formState.save();
 
-      try {
-        user = await _auth.signInWithEmailAndPassword(email: _email, password: _password);
-        // TODO navigate to Home
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: user) ));
-      } catch(e) {
-        print(e.message);
+     
+      print(person.email);
+      print("password" + person.password);
 
-        showDialog(context: context,
-            builder: (BuildContext context) => AlertDialog(
-              title: Text('An Error Occured'),
-              content: Text(e.message),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text('Ok'))
-              ],
-            )
-        );
-      }
+      userAuth.signInUser(person).then((FirebaseUser user) {
+        //showInSnackBar('Login succesfull');
+        print("login successfully");
+        // move to home page
+      }).catchError((e) {
+        print("error:${e.toString()}");
+        //showInSnackBar(e);
+      });
+
     }
+  }
+
+  void showInSnackBar(String value) {
+    _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(value)));
   }
 }

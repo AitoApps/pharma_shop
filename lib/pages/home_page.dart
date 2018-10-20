@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pharma_shop/pages/login_page.dart';
+import 'package:pharma_shop/auth.dart' ;
+
+
 
 class HomePage extends StatefulWidget {
-  final FirebaseUser user;
+  FirebaseUser user;
 
   HomePage({@required this.user});
 
@@ -12,9 +15,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  UserAuth userAuth = UserAuth();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+
+  return Scaffold(
       appBar: AppBar(
         title: Text("Hi ${widget.user.email}"),
         actions: <Widget>[
@@ -49,7 +56,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await userAuth.signOut();
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 }
