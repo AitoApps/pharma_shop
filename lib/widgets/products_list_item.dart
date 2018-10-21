@@ -42,17 +42,17 @@ class ProductsListItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Text("$currentPrice",
-                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        Text("$currentPrice DH",
+                          style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(width: 8.0,),
-                        Text("$originalPrice",
+                        Text("$originalPrice DH",
                           style: TextStyle(
                               fontSize: 12.0, color: Colors.grey, decoration: TextDecoration.lineThrough
                           ),
                         ),
                         SizedBox(width: 8.0,),
-                        Text("\$$discount off",
+                        Text("$discount% off",
                           style: TextStyle(fontSize: 12.0, color: Colors.grey),
                         ),
                         SizedBox(height: 8.0,)
