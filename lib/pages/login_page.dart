@@ -14,7 +14,7 @@ class _LoginPageState extends State<LoginPage> {
 
   PersonData person = new PersonData();
   bool _autovalidate = false;
- // bool _isLoading = false;
+  bool _isLoading = false;
   bool _isObscured = true;
   UserAuth userAuth = UserAuth();
 

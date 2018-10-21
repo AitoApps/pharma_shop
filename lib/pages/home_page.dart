@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pharma_shop/pages/login_page.dart';
 import 'package:pharma_shop/auth.dart' ;
 
+import 'package:pharma_shop/widgets/products_list_item.dart';
+
 
 
 class HomePage extends StatefulWidget {
@@ -18,8 +20,18 @@ class _HomePageState extends State<HomePage> {
 
   UserAuth userAuth = UserAuth();
 
+  List<String> imageNames = [
+    'cabas-papier-pharmacie.jpg', 'sac-papier-pharmacie1.jpg',
+    'sac-papier-pharmacie2.jpg', 'sac-papier-pharmacie3.jpg'
+  ];
+
   @override
   Widget build(BuildContext context) {
+
+    var size = MediaQuery.of(context).size;
+    /*24 is for notification bar on Android*/
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
+    final double itemWidth = size.width / 2;
 
   return Scaffold(
       appBar: AppBar(
@@ -49,9 +61,41 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Center(
-        child: Text("All products"),
-      ),
+      body: GridView.count(
+          crossAxisCount: 2,
+          childAspectRatio: itemWidth/itemHeight,
+          padding: EdgeInsets.all(16.0),
+          children: <Widget>[
+            ProductsListItem(
+              name: "cartona kbira",
+              currentPrice: 20,
+              originalPrice: 30,
+              discount: 25,
+              imageUrl: 'images/${imageNames[0]}',
+            ),
+            ProductsListItem(
+              name: "cartona kbira",
+              currentPrice: 20,
+              originalPrice: 30,
+              discount: 25,
+              imageUrl: 'images/${imageNames[1]}',
+            ),
+            ProductsListItem(
+              name: "cartona kbira",
+              currentPrice: 10,
+              originalPrice: 15,
+              discount: 20,
+              imageUrl: 'images/${imageNames[2]}',
+            ),
+            ProductsListItem(
+              name: "cartona kbira",
+              currentPrice: 10,
+              originalPrice: 15,
+              discount: 20,
+              imageUrl: 'images/${imageNames[3]}',
+            )
+        ],
+      )
     );
   }
 
