@@ -1,11 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:pharma_shop/model/product.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'dart:convert';
 
 class ProductDetailPage extends StatefulWidget {
+  final Product product;
+
+  ProductDetailPage({@required this.product});
+
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+
+  List<String> commands;
+
+  _setCartProducts() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setStringList('cart', commands);
+  }
+
+  _getCartProducts() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    List<String> res = prefs.getStringList('cart');
+
+    res = null ? commands = List() : commands = res;
+  }
+
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+
+
+    _getCartProducts();
+
+    print("commands: $commands");
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +64,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Image.asset("images/cabas-papier-pharmacie.jpg"),
+                  Image.asset(widget.product.imageUrl),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Column(
@@ -71,8 +114,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
           RaisedButton(
             color: Colors.green,
-            onPressed: (){},
-            child: Text("Commander", style: TextStyle(fontSize: 20.0, color: Colors.white)),
+            onPressed: (){
+
+              final commande = Commande(widget.product, 10);
+              var jsonCommande = commande.toJson();
+              String stringC = json.encode(jsonCommande);
+
+              print("fdfd : $stringC");
+
+              commands.add(stringC);
+
+              _setCartProducts();
+
+              Navigator.of(context).pop();
+            },
+            child: Text("ajouter au panier", style: TextStyle(fontSize: 20.0, color: Colors.white)),
           )
 
         ],

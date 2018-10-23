@@ -4,6 +4,7 @@ import 'package:pharma_shop/pages/login_page.dart';
 import 'package:pharma_shop/auth.dart' ;
 
 import 'package:pharma_shop/widgets/products_list_item.dart';
+import 'package:pharma_shop/model/product.dart';
 
 
 
@@ -19,10 +20,36 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   UserAuth userAuth = UserAuth();
-
-  List<String> imageNames = [
-    'cabas-papier-pharmacie.jpg', 'sac-papier-pharmacie1.jpg',
-    'sac-papier-pharmacie2.jpg', 'sac-papier-pharmacie3.jpg'
+  // List of products
+  List<Product> products = [
+    Product(
+      name: "cartona kbira",
+      currentPrice: 20,
+      originalPrice: 30,
+      discount: 25,
+      imageUrl: 'images/cabas-papier-pharmacie.jpg',
+    ),
+    Product(
+      name: "cartona kbira",
+      currentPrice: 20,
+      originalPrice: 30,
+      discount: 25,
+      imageUrl: 'images/sac-papier-pharmacie1.jpg',
+    ),
+    Product(
+      name: "cartona kbira",
+      currentPrice: 10,
+      originalPrice: 15,
+      discount: 20,
+      imageUrl: 'images/sac-papier-pharmacie2.jpg',
+    ),
+    Product(
+      name: "cartona kbira",
+      currentPrice: 10,
+      originalPrice: 15,
+      discount: 20,
+      imageUrl: 'images/sac-papier-pharmacie3.jpg',
+    )
   ];
 
   @override
@@ -66,34 +93,10 @@ class _HomePageState extends State<HomePage> {
           childAspectRatio: itemWidth/itemHeight,
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
-            ProductsListItem(
-              name: "cartona kbira",
-              currentPrice: 20,
-              originalPrice: 30,
-              discount: 25,
-              imageUrl: 'images/${imageNames[0]}',
-            ),
-            ProductsListItem(
-              name: "cartona kbira",
-              currentPrice: 20,
-              originalPrice: 30,
-              discount: 25,
-              imageUrl: 'images/${imageNames[1]}',
-            ),
-            ProductsListItem(
-              name: "cartona kbira",
-              currentPrice: 10,
-              originalPrice: 15,
-              discount: 20,
-              imageUrl: 'images/${imageNames[2]}',
-            ),
-            ProductsListItem(
-              name: "cartona kbira",
-              currentPrice: 10,
-              originalPrice: 15,
-              discount: 20,
-              imageUrl: 'images/${imageNames[3]}',
-            )
+            ProductsListItem(product: products[0],),
+            ProductsListItem(product: products[1]),
+            ProductsListItem(product: products[2]),
+            ProductsListItem(product: products[3]),
         ],
       )
     );
