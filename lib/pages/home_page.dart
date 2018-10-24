@@ -5,6 +5,7 @@ import 'package:pharma_shop/auth.dart' ;
 
 import 'package:pharma_shop/widgets/products_list_item.dart';
 import 'package:pharma_shop/model/product.dart';
+import 'package:pharma_shop/pages/cart_page.dart';
 
 
 
@@ -64,7 +65,10 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Hi ${widget.user.email}"),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.shopping_cart), onPressed: (){}),
+          IconButton(icon: Icon(Icons.shopping_cart), onPressed: (){
+            print("cart cliked");
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => CartPage()));
+          }),
           FlatButton(
             child: Text("LogOut", style: TextStyle(color: Colors.white70),),
             onPressed: signOut

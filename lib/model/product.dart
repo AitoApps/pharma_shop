@@ -9,6 +9,16 @@ class Product {
 
   Product({this.name, this.currentPrice, this.originalPrice, this.discount, this.imageUrl});
 
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      name: json['name'],
+      currentPrice: json['currentPrice'],
+      originalPrice: json['originalPrice'],
+      discount: json['discount'],
+      imageUrl: json['imageUrl'],
+    );
+  }
+
   Map<String, dynamic> toJson() =>
       {
         'name': name,
@@ -25,7 +35,14 @@ class Commande {
   final Product product;
   final int quantity;
 
-  Commande(this.product, this.quantity);
+  Commande({this.product, this.quantity});
+
+  factory Commande.fromJson(Map<String, dynamic> json) {
+    return Commande (
+        product: Product.fromJson(json['product']),
+        quantity: json['quantity']
+    );
+  }
 
   Map<String, dynamic> toJson() =>
       {

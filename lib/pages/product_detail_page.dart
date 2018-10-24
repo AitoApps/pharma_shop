@@ -21,31 +21,47 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setStringList('cart', commands);
+
+    setState(() {});
   }
 
-  _getCartProducts() async {
+  Future<List<String>> _getCartProducts() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     List<String> res = prefs.getStringList('cart');
 
-    res = null ? commands = List() : commands = res;
+    //res == null ? commands = List() : commands = res;
+
+    return res == null ?  List() : res;
+
+
+  }
+
+  _clearCartProducts() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.clear().then((success) {
+      success == true ? print("clear successfuly") : print("clear failed");
+    });
   }
 
 
 
 
   @override
-  void initState() {
+  void initState()  {
     // TODO: implement initState
     super.initState();
 
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // _clearCartProducts();
 
+    _getCartProducts().then((res){
+      this.commands = res;
+      print("init: $commands");
 
+      setState(() {});
 
-    _getCartProducts();
-
-    print("commands: $commands");
+    });
 
   }
 
@@ -116,13 +132,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             color: Colors.green,
             onPressed: (){
 
-              final commande = Commande(widget.product, 10);
+              final commande = Commande(product: widget.product, quantity: 20);
               var jsonCommande = commande.toJson();
               String stringC = json.encode(jsonCommande);
 
-              print("fdfd : $stringC");
-
               commands.add(stringC);
+
+              print(commands);
 
               _setCartProducts();
 
