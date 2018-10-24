@@ -28,7 +28,7 @@ class _CartPageState extends State<CartPage> {
 
   @override
   void initState() {
-    
+
     super.initState();
 
     _getCartProducts().then((res){
@@ -83,10 +83,10 @@ class _CartPageState extends State<CartPage> {
                             ),),
                           ),
                         ),
-                        SizedBox(height: 40.0,),
+                        SizedBox(height: 30.0,),
                         Row(
                           children: <Widget>[
-                            Text('price : ', style: TextStyle(
+                            Text('price       :', style: TextStyle(
                               fontWeight: FontWeight.bold
                             ),),
                             SizedBox(width: 20.0,),
@@ -99,23 +99,47 @@ class _CartPageState extends State<CartPage> {
                                 fontWeight: FontWeight.bold
                             ),),
                             SizedBox(width: 20.0,),
-                            Text('${commande.quantity} dh')
+                            Text('${commande.quantity} ')
                           ],
                         ),
+                       SizedBox(height: 20.0,),
                         Row(
                           children: <Widget>[
-                            Text('facture : ', style: TextStyle(
+                            Text('facture   :', style: TextStyle(
                                 fontWeight: FontWeight.bold
                             ),),
                             SizedBox(width: 20.0,),
                             Text('${commande.product.currentPrice * commande.quantity} dh')
                           ],
                         ),
+                        SizedBox(height: 10.0,),
+                        Container(height: 0.5, color: Colors.grey,),
+                        SizedBox(height: 5.0,),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: IconButton(
+                                onPressed: (){},
+                                icon: Icon(Icons.edit),
+                              ),
+                            ),
+                            Expanded(
+                              child: IconButton(
+                                onPressed: (){},
+                                icon: Icon(Icons.shop),
+                              ),
+                            ),
+                            Expanded(
+                              child: IconButton(
+                                onPressed: (){},
+                                icon: Icon(Icons.delete),
+                              ),
+                            )
+                          ],
+                        )
                       ],
                     ),
                   )
-
-
                 ],
               ),
             );
