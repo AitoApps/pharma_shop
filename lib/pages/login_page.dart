@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pharma_shop/pages/home_page.dart';
 
 import 'package:pharma_shop/auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -29,6 +30,12 @@ class _LoginPageState extends State<LoginPage> {
     userAuth.currentUser().then((user) {
       if( user != null) {
         print("user: ${user.email}");
+
+        Firestore.instance.collection("users").document(user.uid).setData({
+          "name": user.displayName,
+          "email":user.email
+        });
+
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(user: user)));
 
       } else {
@@ -77,8 +84,6 @@ class _LoginPageState extends State<LoginPage> {
         )
     );
   }
-
-
 
   TextFormField buildPasswordTextField() {
 

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pharma_shop/model/product.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pharma_shop/auth.dart';
+
 import 'dart:convert';
+import 'dart:async';
 
 
 class CartPage extends StatefulWidget {
@@ -26,10 +31,20 @@ class _CartPageState extends State<CartPage> {
 
   }
 
+
+
+  UserAuth userAuth = UserAuth();
+
+  FirebaseUser user;
+
   @override
   void initState() {
 
     super.initState();
+
+    userAuth.currentUser().then((user){
+      this.user = user;
+    });
 
     _getCartProducts().then((res){
 
@@ -55,7 +70,33 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Cart Products"),
+        title: Text(" ${commandes.length} Products"),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.send),
+              onPressed: (){
+                // push to firestore
+                print("dfffffffff");
+                Firestore.instance.runTransaction((transaction) async {
+                  CollectionReference reference = Firestore.instance.collection('orders');
+
+                  Future.forEach(commandes, (Commande order) async {
+
+                    await reference.add({
+                      "user_id": user.uid,
+                      "name": order.product.name,
+                      "price": order.product.currentPrice,
+                      "quantity": order.quantity
+
+                    });
+                  });
+                });
+
+
+
+              }
+          )
+        ],
       ),
       body: ListView.builder(
 

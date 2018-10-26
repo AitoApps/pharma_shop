@@ -29,8 +29,6 @@ class Product {
       };
 }
 
-
-
 class Commande {
   final Product product;
   final int quantity;

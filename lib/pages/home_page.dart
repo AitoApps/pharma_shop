@@ -6,6 +6,7 @@ import 'package:pharma_shop/auth.dart' ;
 import 'package:pharma_shop/widgets/products_list_item.dart';
 import 'package:pharma_shop/model/product.dart';
 import 'package:pharma_shop/pages/cart_page.dart';
+import 'package:pharma_shop/pages/order_page.dart';
 
 
 
@@ -88,7 +89,13 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Text("Log out"),
-            Text("About")
+            Text("About"),
+            RaisedButton(
+                child: Text("My Orders"),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => OrderPage()));
+                }
+            )
           ],
         ),
       ),
