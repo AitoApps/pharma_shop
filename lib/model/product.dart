@@ -31,7 +31,7 @@ class Product {
 
 class Commande {
   final Product product;
-  final int quantity;
+   int quantity;
   final String clientId;
 
   Commande({this.product, this.quantity, this.clientId});

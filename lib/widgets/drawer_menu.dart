@@ -35,17 +35,6 @@ class DrawerMenu extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.power_settings_new),
-            title: Text("Sign out",
-            style: TextStyle(
-              fontSize: 18.0, fontWeight: FontWeight.w400
-            ),
-            ),
-            onTap: (){
-              signOut(context);
-            }
-          ),
-          ListTile(
               leading: Icon(Icons.home),
               title: Text("Home",
                 style: TextStyle(
@@ -56,12 +45,23 @@ class DrawerMenu extends StatelessWidget {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage(user: user)));
               }
           ),
+          ListTile(
+              leading: Icon(Icons.shop),
+              title: Text("My orders",
+                style: TextStyle(
+                    fontSize: 18.0, fontWeight: FontWeight.w400
+                ),
+              ),
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => OrderPage(user: user)));
+              }
+          ),
 
           Divider(),
 
           ListTile(
               leading: Icon(Icons.desktop_mac),
-              title: Text("My orders",
+              title: Text("Admin",
                 style: TextStyle(
                     fontSize: 18.0, fontWeight: FontWeight.w400
                 ),
@@ -89,6 +89,19 @@ class DrawerMenu extends StatelessWidget {
                 });
               }
           ),
+          Divider(),
+          ListTile(
+              leading: Icon(Icons.power_settings_new),
+              title: Text("Sign out",
+                style: TextStyle(
+                    fontSize: 18.0, fontWeight: FontWeight.w400
+                ),
+              ),
+              onTap: (){
+                signOut(context);
+              }
+          )
+
         ],
       ),
     );

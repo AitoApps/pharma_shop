@@ -3,7 +3,7 @@ import 'package:pharma_shop/model/product.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pharma_shop/auth.dart';
-import 'package:pharma_shop/widgets/card_product_detail.dart';
+import 'package:pharma_shop/widgets/cart_product_detail.dart';
 
 import 'dart:convert';
 
@@ -87,7 +87,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         children: <Widget>[
           Container(
             padding: const EdgeInsets.all(4.0),
-            child: CardProductDetail(product: widget.product)
+            child: CartProductDetail(product: widget.product)
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),

@@ -25,6 +25,8 @@ class _CartPageState extends State<CartPage> {
 
   List<Commande> commandes = List();
 
+  int total_price;
+
   Future<List<String>> _getCartProducts() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -53,6 +55,8 @@ class _CartPageState extends State<CartPage> {
 
     super.initState();
 
+    this.total_price = 0;
+
     _getCartProducts().then((res){
 
       print("res : $res");
@@ -63,6 +67,8 @@ class _CartPageState extends State<CartPage> {
           Commande commande = Commande.fromJson(jsonC);
 
           commandes.add(commande);
+
+          total_price += commande.product.currentPrice * commande.quantity;
 
           setState(() {});
       });
@@ -77,14 +83,13 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(" ${commandes.length} Products"),
+        title: Text(" ${commandes.length} Orders : $total_price Dh"),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.done, size: 40.0, color: Colors.yellow,),
               onPressed: (){
                 // push to firestore
                  send_order();
-
               }
           )
         ],
@@ -152,19 +157,44 @@ class _CartPageState extends State<CartPage> {
                           children: <Widget>[
                             Expanded(
                               child: IconButton(
-                                onPressed: (){},
-                                icon: Icon(Icons.edit),
+                                onPressed: (){
+                                  setState(() {
+                                    commande.quantity += 1;
+                                    total_price = 0;
+                                    commandes.forEach((commande){
+                                      total_price += commande.product.currentPrice * commande.quantity;
+                                    });
+                                  });
+
+                                },
+                                icon: Icon(Icons.plus_one),
                               ),
                             ),
                             Expanded(
                               child: IconButton(
-                                onPressed: (){},
-                                icon: Icon(Icons.shop),
+                                onPressed: (){
+                                  setState(() {
+                                    commande.quantity -= 1;
+                                    total_price = 0;
+                                    commandes.forEach((commande){
+                                      total_price += commande.product.currentPrice * commande.quantity;
+                                    });
+                                  });
+                                },
+                                icon: Icon(Icons.exposure_neg_1),
                               ),
                             ),
                             Expanded(
                               child: IconButton(
-                                onPressed: (){},
+                                onPressed: (){
+                                  setState(() {
+                                    commandes.remove(commande);
+                                    total_price = 0;
+                                    commandes.forEach((commande){
+                                      total_price += commande.product.currentPrice * commande.quantity;
+                                    });
+                                  });
+                                },
                                 icon: Icon(Icons.delete),
                               ),
                             )
@@ -193,12 +223,15 @@ class _CartPageState extends State<CartPage> {
           "user_id": widget.user.uid,
           "name": order.product.name,
           "price": order.product.currentPrice,
-          "quantity": order.quantity
+          "image_url": order.product.imageUrl,
+          "quantity": order.quantity,
+          "status": "pending"
 
         });
       }).then((_){
         print("test3");
         _clearCartProducts();
+       Navigator.of(context).pop();
         print("test4");
       });
     });

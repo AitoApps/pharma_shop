@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pharma_shop/model/product.dart';
 
-class CardProductDetail extends StatelessWidget {
+class CartProductDetail extends StatelessWidget {
   final Product product;
 
-  CardProductDetail({@required this.product});
+  CartProductDetail({@required this.product});
   @override
   Widget build(BuildContext context) {
     return Card(
