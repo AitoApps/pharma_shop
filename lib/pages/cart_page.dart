@@ -3,13 +3,18 @@ import 'package:pharma_shop/model/product.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pharma_shop/auth.dart';
+import 'package:pharma_shop/widgets/drawer_menu.dart';
 
 import 'dart:convert';
 import 'dart:async';
 
 
 class CartPage extends StatefulWidget {
+
+  FirebaseUser user;
+
+  CartPage({@required this.user});
+
   @override
   _CartPageState createState() => _CartPageState();
 }
@@ -31,20 +36,22 @@ class _CartPageState extends State<CartPage> {
 
   }
 
+  _clearCartProducts() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    await prefs.clear().then((success) {
+      success == true ? print("clear successfuly") : print("clear failed");
 
-  UserAuth userAuth = UserAuth();
-
-  FirebaseUser user;
+      setState(() {
+        commandes = List();
+      });
+    });
+  }
 
   @override
   void initState() {
 
     super.initState();
-
-    userAuth.currentUser().then((user){
-      this.user = user;
-    });
 
     _getCartProducts().then((res){
 
@@ -73,31 +80,16 @@ class _CartPageState extends State<CartPage> {
         title: Text(" ${commandes.length} Products"),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.send),
+              icon: Icon(Icons.done, size: 40.0, color: Colors.yellow,),
               onPressed: (){
                 // push to firestore
-                print("dfffffffff");
-                Firestore.instance.runTransaction((transaction) async {
-                  CollectionReference reference = Firestore.instance.collection('orders');
-
-                  Future.forEach(commandes, (Commande order) async {
-
-                    await reference.add({
-                      "user_id": user.uid,
-                      "name": order.product.name,
-                      "price": order.product.currentPrice,
-                      "quantity": order.quantity
-
-                    });
-                  });
-                });
-
-
+                 send_order();
 
               }
           )
         ],
       ),
+      drawer: DrawerMenu(user: widget.user,),
       body: ListView.builder(
 
           itemCount: commandes.length,
@@ -177,15 +169,38 @@ class _CartPageState extends State<CartPage> {
                               ),
                             )
                           ],
-                        )
+                        ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             );
           }
       ),
     );
+  }
+
+  Future send_order() async {
+             // push to firestore
+    print("test1");
+    Firestore.instance.runTransaction((transaction) async {
+      CollectionReference reference = Firestore.instance.collection('orders');
+
+      Future.forEach(this.commandes, (Commande order) async {
+        print("test2");
+        await reference.add({
+          "user_id": widget.user.uid,
+          "name": order.product.name,
+          "price": order.product.currentPrice,
+          "quantity": order.quantity
+
+        });
+      }).then((_){
+        print("test3");
+        _clearCartProducts();
+        print("test4");
+      });
+    });
   }
 }

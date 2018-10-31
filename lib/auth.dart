@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -56,5 +58,15 @@ class UserAuth {
   Future<FirebaseUser> currentUser() async {
     return await _auth.currentUser();
   }
+
+  Future<bool> isAdmin(FirebaseUser user) async {
+
+    DocumentSnapshot userSnapshot = await Firestore.instance.collection('users').document(user.uid).get();
+
+    Map<String, dynamic> userData = userSnapshot.data;
+
+    return userData["is_admin"];
+  }
+
 
 }

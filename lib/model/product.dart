@@ -32,18 +32,21 @@ class Product {
 class Commande {
   final Product product;
   final int quantity;
+  final String clientId;
 
-  Commande({this.product, this.quantity});
+  Commande({this.product, this.quantity, this.clientId});
 
   factory Commande.fromJson(Map<String, dynamic> json) {
     return Commande (
         product: Product.fromJson(json['product']),
-        quantity: json['quantity']
+        quantity: json['quantity'],
+        clientId: json['clientId']
     );
   }
 
   Map<String, dynamic> toJson() =>
       {
+        'clientId': clientId,
         'quantity': quantity,
         'product': product.toJson(),
       };

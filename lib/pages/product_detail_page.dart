@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pharma_shop/model/product.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pharma_shop/auth.dart';
+import 'package:pharma_shop/widgets/card_product_detail.dart';
 
 import 'dart:convert';
 
@@ -16,8 +19,17 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage> {
 
   List<String> commands;
+  FirebaseUser user;
+  _setCartProducts(int quantity) async {
 
-  _setCartProducts() async {
+    final commande = Commande(product: widget.product, quantity: quantity, clientId: user.uid);
+    var jsonCommande = commande.toJson();
+    String stringC = json.encode(jsonCommande);
+
+    commands.add(stringC);
+
+   // print(commands);
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setStringList('cart', commands);
@@ -30,10 +42,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     List<String> res = prefs.getStringList('cart');
 
-    //res == null ? commands = List() : commands = res;
-
     return res == null ?  List() : res;
-
 
   }
 
@@ -45,13 +54,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     });
   }
 
-
-
-
   @override
   void initState()  {
     // TODO: implement initState
     super.initState();
+
+    UserAuth userAuth = UserAuth();
+
+    userAuth.currentUser().then((user){
+      this.user = user;
+    });
 
     // _clearCartProducts();
 
@@ -75,48 +87,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         children: <Widget>[
           Container(
             padding: const EdgeInsets.all(4.0),
-            child: Card(
-              elevation: 4.0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Image.asset(widget.product.imageUrl),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text("kartona diale dowa",
-                          style: TextStyle(fontSize: 16.0, color: Colors.grey),
-                        ),
-                        SizedBox(height: 2.0,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text("20 DH",
-                              style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(width: 8.0,),
-                            Text("3 DH",
-                              style: TextStyle(
-                                  fontSize: 12.0, color: Colors.grey, decoration: TextDecoration.lineThrough
-                              ),
-                            ),
-                            SizedBox(width: 8.0,),
-                            Text("40% off",
-                              style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                            ),
-                            SizedBox(height: 8.0,)
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
+            child: CardProductDetail(product: widget.product)
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),
@@ -132,15 +103,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             color: Colors.green,
             onPressed: (){
 
-              final commande = Commande(product: widget.product, quantity: 20);
-              var jsonCommande = commande.toJson();
-              String stringC = json.encode(jsonCommande);
-
-              commands.add(stringC);
-
-              print(commands);
-
-              _setCartProducts();
+              _setCartProducts(20);
 
               Navigator.of(context).pop();
             },

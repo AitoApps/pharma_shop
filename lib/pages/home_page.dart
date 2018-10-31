@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pharma_shop/pages/login_page.dart';
 import 'package:pharma_shop/auth.dart' ;
 
 import 'package:pharma_shop/widgets/products_list_item.dart';
 import 'package:pharma_shop/model/product.dart';
 import 'package:pharma_shop/pages/cart_page.dart';
-import 'package:pharma_shop/pages/order_page.dart';
+import 'package:pharma_shop/widgets/drawer_menu.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -21,38 +21,74 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  int cartCount;
   UserAuth userAuth = UserAuth();
   // List of products
   List<Product> products = [
     Product(
-      name: "cartona kbira",
+      name: "cartona 1",
       currentPrice: 20,
-      originalPrice: 30,
+      originalPrice: 25,
       discount: 25,
       imageUrl: 'images/cabas-papier-pharmacie.jpg',
     ),
     Product(
-      name: "cartona kbira",
-      currentPrice: 20,
+      name: "cartona 2",
+      currentPrice: 25,
       originalPrice: 30,
       discount: 25,
       imageUrl: 'images/sac-papier-pharmacie1.jpg',
     ),
     Product(
-      name: "cartona kbira",
-      currentPrice: 10,
-      originalPrice: 15,
+      name: "cartona 3",
+      currentPrice: 30,
+      originalPrice: 35,
       discount: 20,
       imageUrl: 'images/sac-papier-pharmacie2.jpg',
     ),
     Product(
-      name: "cartona kbira",
-      currentPrice: 10,
-      originalPrice: 15,
+      name: "cartona 4",
+      currentPrice: 35,
+      originalPrice: 40,
       discount: 20,
       imageUrl: 'images/sac-papier-pharmacie3.jpg',
     )
   ];
+
+  Future<List<String>> _getCartProducts() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    List<String> res = prefs.getStringList('cart');
+
+    //res == null ? commands = List() : commands = res;
+
+    return res == null ? List() : res;
+
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _getCartProducts().then((items){
+      setState(() {
+        cartCount = items.length;
+      });
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    _getCartProducts().then((items){
+      setState(() {
+        cartCount = items.length;
+      });
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,41 +100,25 @@ class _HomePageState extends State<HomePage> {
 
   return Scaffold(
       appBar: AppBar(
-        title: Text("Hi ${widget.user.email}"),
+        title: Text("List Product"),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.shopping_cart), onPressed: (){
-            print("cart cliked");
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => CartPage()));
-          }),
-          FlatButton(
-            child: Text("LogOut", style: TextStyle(color: Colors.white70),),
-            onPressed: signOut
+          Stack(
+            children: <Widget>[
+              IconButton(icon: Icon(Icons.shopping_cart, size: 40.0,), onPressed: (){
+                print("cart cliked");
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => CartPage(user: widget.user,)));
+              }),
+              CircleAvatar(
+                radius: 10.0,
+                backgroundColor: Colors.red,
+                child: Text('$cartCount', style: TextStyle(color: Colors.white, fontSize: 12.0),),
+              )
 
-          )
+            ],
+          ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-                accountName: Text('${widget.user.displayName}'),
-                accountEmail: Text('${widget.user.email}'),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.green,
-                child: Image.network('${widget.user.photoUrl}'),
-              ),
-            ),
-            Text("Log out"),
-            Text("About"),
-            RaisedButton(
-                child: Text("My Orders"),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => OrderPage()));
-                }
-            )
-          ],
-        ),
-      ),
+      drawer: DrawerMenu(user: widget.user,),
       body: GridView.count(
           crossAxisCount: 2,
           childAspectRatio: itemWidth/itemHeight,
@@ -113,8 +133,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void signOut() async {
-    await userAuth.signOut();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-  }
 }
