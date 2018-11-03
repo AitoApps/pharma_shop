@@ -1,21 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:pharma_shop/model/client.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pharma_shop/widgets/drawer_menu.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pharma_shop/widgets/drawer_menu.dart';
 
-class AdminClientDetailPage extends StatefulWidget {
 
-  final Client client;
+class AdminOrderPage extends StatefulWidget {
+
   FirebaseUser user;
 
-  AdminClientDetailPage({@required this.client, this.user});
+  AdminOrderPage({@required this.user});
 
   @override
-  _AdminClientDetailPageState createState() => _AdminClientDetailPageState();
+  _AdminOrderPageState createState() => _AdminOrderPageState();
 }
 
-class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
+class _AdminOrderPageState extends State<AdminOrderPage> {
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,7 @@ class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
       length: 2,
       child: Scaffold(
           appBar: AppBar(
-            title: Text("${widget.client.name} Orders "),
+            title: Text("My Orders "),
             bottom: TabBar(
                 tabs: [
                   Tab(child: Text("Pending"),),
@@ -35,9 +34,7 @@ class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
           body: TabBarView(
               children: [
                 StreamBuilder(
-                    stream: Firestore.instance.collection('orders').
-                    where("user_id", isEqualTo: "${widget.client.clientID}")
-                    .where("status", isEqualTo: "pending").snapshots(),
+                    stream: Firestore.instance.collection('orders').where("status", isEqualTo: "pending").snapshots(),
                     builder:
                         (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (!snapshot.hasData) return CircularProgressIndicator();
@@ -45,15 +42,18 @@ class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
                       return ListView.builder(
                           itemCount: documants.length,
                           itemBuilder: (BuildContext context, int index) {
-                            String orderId = documants[index].documentID;
-                            Map<String, dynamic> order = documants[index].data;
-                            return  buildOrderCard(order, orderId);
-                            });
+                            String name = documants[index].data['name'].toString();
+                            int currentPrice = documants[index].data['price'];
+                            int quantity = documants[index].data['quantity'];
+                            String imageUrl = documants[index].data['image_url'].toString();
+                            String clientId = documants[index].data['user_id'].toString();
+
+
+                            return  buildOrderCard(imageUrl, name, currentPrice, quantity, clientId);
+                          });
                     }),
                 StreamBuilder(
-                    stream: Firestore.instance.collection('orders')
-                    .where("user_id", isEqualTo: "${widget.client.clientID}")
-                    .where("status", isEqualTo: "completed").snapshots(),
+                    stream: Firestore.instance.collection('orders').where("status", isEqualTo: "completed").snapshots(),
                     builder:
                         (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (!snapshot.hasData) return CircularProgressIndicator();
@@ -61,9 +61,13 @@ class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
                       return ListView.builder(
                           itemCount: documants.length,
                           itemBuilder: (BuildContext context, int index) {
-                            String orderId = documants[index].documentID;
-                            Map<String, dynamic> order = documants[index].data;
-                            return  buildOrderCard(order, orderId);
+                            String name = documants[index].data['name'].toString();
+                            int currentPrice = documants[index].data['price'];
+                            int quantity = documants[index].data['quantity'];
+                            String imageUrl = documants[index].data['image_url'].toString();
+                            String clientId = documants[index].data['user_id'].toString();
+
+                            return  buildOrderCard(imageUrl, name, currentPrice, quantity, clientId);
                           });
                     }),
               ]
@@ -71,18 +75,8 @@ class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
       ),
     );
   }
-//String imageUrl, String name, int currentPrice, int quantity, clientId
-  Card buildOrderCard(Map<String, dynamic> order, String orderId) {
 
-
-    String name = order['name'].toString();
-    int currentPrice = order['price'];
-    int quantity = order['quantity'];
-    String imageUrl = order['image_url'].toString();
-    String clientId = order['user_id'].toString();
-    String status = order['status'].toString();
-
-    print(status);
+  Card buildOrderCard(String imageUrl, String name, int currentPrice, int quantity, clientId) {
 
     return Card(
       elevation: 4.0,
@@ -155,24 +149,9 @@ class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
                       ),
                     ),
                     Expanded(
-                      child:
-                      status == 'completed' ?
-                      IconButton(
+                      child: IconButton(
                         onPressed: (){
 
-                        },
-                        icon: Icon(Icons.delete ),
-                      )
-                          :
-                      IconButton(
-                        onPressed: (){
-
-                          Firestore.instance.collection('orders').document(orderId)
-                              .setData({'status': "completed"}, merge: true).then((_){
-                                setState(() {
-
-                                });
-                          });
                         },
                         icon: Icon(Icons.done ),
                       ),
@@ -187,5 +166,4 @@ class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
     );
   }
 }
-
 

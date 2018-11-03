@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pharma_shop/widgets/drawer_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pharma_shop/model/product.dart';
 
 enum OrderStatus {
   pending, shipped, completed
@@ -20,39 +20,77 @@ class OrderPage extends StatefulWidget {
 
 class _OrderPageState extends State<OrderPage> {
 
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("My Orders "),
-      ),
-      drawer: DrawerMenu(user: widget.user,),
-      body: StreamBuilder(
-          stream: Firestore.instance.collection('orders').where("status", isEqualTo: "pending").snapshots(),
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (!snapshot.hasData) return CircularProgressIndicator();
-            final List<DocumentSnapshot> documants = snapshot.data.documents;
-            return ListView.builder(
-                itemCount: documants.length,
-                itemBuilder: (BuildContext context, int index) {
-                  String name = documants[index].data['name'].toString();
-                  int currentPrice = documants[index].data['price'];
-                  int quantity = documants[index].data['quantity'];
-                  String imageUrl = documants[index].data['image_url'].toString();
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("My Orders "),
+          bottom: TabBar(
+              tabs: [
+                Tab(child: Text("Pending"),),
+                Tab(child: Text("Completed"),)
+              ]
+          ),
+        ),
+        drawer: DrawerMenu(user: widget.user,),
+        body: TabBarView(
+            children: [
+              StreamBuilder(
+                  stream: Firestore.instance.collection('orders').where("status", isEqualTo: "pending").snapshots(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) return CircularProgressIndicator();
+                    final List<DocumentSnapshot> documants = snapshot.data.documents;
+                    return ListView.builder(
+                        itemCount: documants.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          String name = documants[index].data['name'].toString();
+                          int currentPrice = documants[index].data['price'];
+                          int quantity = documants[index].data['quantity'];
+                          String imageUrl = documants[index].data['image_url'].toString();
 
-                  return  Card(
+                          return  buildOrderCard(imageUrl, name, currentPrice, quantity);
+                        });
+                  }),
+              StreamBuilder(
+                  stream: Firestore.instance.collection('orders').where("status", isEqualTo: "completed").snapshots(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) return CircularProgressIndicator();
+                    final List<DocumentSnapshot> documants = snapshot.data.documents;
+                    return ListView.builder(
+                        itemCount: documants.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          String name = documants[index].data['name'].toString();
+                          int currentPrice = documants[index].data['price'];
+                          int quantity = documants[index].data['quantity'];
+                          String imageUrl = documants[index].data['image_url'].toString();
+
+                          return  buildOrderCard(imageUrl, name, currentPrice, quantity);
+                        });
+                  }),
+            ]
+        )
+      ),
+    );
+  }
+
+  Card buildOrderCard(String imageUrl, String name, int currentPrice, int quantity) {
+    return Card(
                     elevation: 4.0,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-
                       children: <Widget>[
                         Container(
                             width: 200.0,
@@ -135,8 +173,5 @@ class _OrderPageState extends State<OrderPage> {
                       ],
                     ),
                   );
-                });
-          }),
-    );
   }
 }

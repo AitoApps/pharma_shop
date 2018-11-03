@@ -1,4 +1,6 @@
-import 'dart:convert';
+
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
   final String name;
@@ -27,20 +29,29 @@ class Product {
         'discount': discount,
         'imageUrl': imageUrl
       };
+
+  Product.fromSnapshot(DocumentSnapshot snapshot)
+      : name = snapshot['name'],
+        currentPrice = snapshot['currentPrice'],
+        originalPrice = snapshot['originalPrice'],
+        discount = snapshot['discount'],
+        imageUrl = snapshot['imageUrl'];
 }
 
 class Commande {
   final Product product;
    int quantity;
-  final String clientId;
+   String clientId;
+   String status;
 
-  Commande({this.product, this.quantity, this.clientId});
+  Commande({this.product, this.quantity, this.clientId, this.status});
 
   factory Commande.fromJson(Map<String, dynamic> json) {
     return Commande (
         product: Product.fromJson(json['product']),
         quantity: json['quantity'],
-        clientId: json['clientId']
+        clientId: json['clientId'],
+        status: json['status']
     );
   }
 
@@ -48,6 +59,13 @@ class Commande {
       {
         'clientId': clientId,
         'quantity': quantity,
+        'status': status,
         'product': product.toJson(),
       };
+
+//  Commande.fromSnapshot(DocumentSnapshot snapshot)
+//      : //product = Product.fromSnapshot(snapshot['product']),
+//        quantity = snapshot['quantity'],
+//        clientId =snapshot['clientId'],
+//        status = snapshot['status'];
 }

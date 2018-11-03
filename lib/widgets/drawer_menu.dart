@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pharma_shop/adminPages/admin_order_page.dart';
 import 'package:pharma_shop/pages/order_page.dart';
 import 'package:pharma_shop/pages/home_page.dart';
 import 'package:pharma_shop/auth.dart';
@@ -85,7 +86,22 @@ class DrawerMenu extends StatelessWidget {
                 userAuth.isAdmin(user).then((isAdmin){
                   print(isAdmin);
                   if (isAdmin)
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AdminClientPage()));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AdminClientPage(user: user)));
+                });
+              }
+          ),
+          ListTile(
+              leading: Icon(Icons.shop),
+              title: Text("Orders",
+                style: TextStyle(
+                    fontSize: 18.0, fontWeight: FontWeight.w400
+                ),
+              ),
+              onTap: (){
+                userAuth.isAdmin(user).then((isAdmin){
+                  print(isAdmin);
+                  if (isAdmin)
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => AdminOrderPage(user: user)));
                 });
               }
           ),

@@ -4,22 +4,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pharma_shop/model/client.dart';
 import 'package:pharma_shop/adminPages/admin_client_detail_page.dart';
 
+
 class AdminClientPage extends StatefulWidget {
+  FirebaseUser user;
+
+  AdminClientPage({@required this.user});
   @override
   _AdminClientPageState createState() => _AdminClientPageState();
 }
 
 class _AdminClientPageState extends State<AdminClientPage> {
 
-  List<FirebaseUser> users;
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     print("admin_client_page");
-
-    //clients = [];
   }
 
   Stream<List<Client>> getClients() {
@@ -86,7 +88,8 @@ class _AdminClientPageState extends State<AdminClientPage> {
                       ],
                     ),
                     trailing: IconButton(icon: Icon(Icons.keyboard_arrow_right), iconSize: 30.0, onPressed: (){
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AdminClientDetailPage(client: client,)));
+                      print("sfdgsfdgsdfgf");
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AdminClientDetailPage(client: client, user: widget.user)));
                     })
                     //Icon(Icons.keyboard_arrow_right, size: 30.0,),
                   );
