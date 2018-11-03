@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pharma_shop/widgets/drawer_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pharma_shop/model/product.dart';
 
 enum OrderStatus {
   pending, shipped, completed
@@ -55,12 +54,9 @@ class _OrderPageState extends State<OrderPage> {
                     return ListView.builder(
                         itemCount: documants.length,
                         itemBuilder: (BuildContext context, int index) {
-                          String name = documants[index].data['name'].toString();
-                          int currentPrice = documants[index].data['price'];
-                          int quantity = documants[index].data['quantity'];
-                          String imageUrl = documants[index].data['image_url'].toString();
-
-                          return  buildOrderCard(imageUrl, name, currentPrice, quantity);
+                          String orderId = documants[index].documentID;
+                          Map<String, dynamic> order = documants[index].data;
+                          return  buildOrderCard(order, orderId);
                         });
                   }),
               StreamBuilder(
@@ -72,12 +68,9 @@ class _OrderPageState extends State<OrderPage> {
                     return ListView.builder(
                         itemCount: documants.length,
                         itemBuilder: (BuildContext context, int index) {
-                          String name = documants[index].data['name'].toString();
-                          int currentPrice = documants[index].data['price'];
-                          int quantity = documants[index].data['quantity'];
-                          String imageUrl = documants[index].data['image_url'].toString();
-
-                          return  buildOrderCard(imageUrl, name, currentPrice, quantity);
+                          String orderId = documants[index].documentID;
+                          Map<String, dynamic> order = documants[index].data;
+                          return  buildOrderCard(order, orderId);
                         });
                   }),
             ]
@@ -86,7 +79,15 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  Card buildOrderCard(String imageUrl, String name, int currentPrice, int quantity) {
+  Card buildOrderCard(Map<String, dynamic> order, String orderId) {
+
+    String name = order['name'].toString();
+    int currentPrice = order['price'];
+    int quantity = order['quantity'];
+    String imageUrl = order['image_url'].toString();
+    String clientId = order['user_id'].toString();
+    String status = order['status'].toString();
+
     return Card(
                     elevation: 4.0,
                     child: Row(
@@ -139,33 +140,17 @@ class _OrderPageState extends State<OrderPage> {
                               SizedBox(height: 10.0,),
                               Container(height: 0.5, color: Colors.grey,),
                               SizedBox(height: 5.0,),
-                              Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: IconButton(
-                                      onPressed: (){
+                              IconButton(
+                                onPressed: (){
+                                  Firestore.instance.collection('orders').document(orderId)
+                                      .delete().then((_){
+                                    setState(() {
 
-                                      },
-                                      icon: Icon(Icons.plus_one),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: IconButton(
-                                      onPressed: (){
+                                    });
+                                  });
 
-                                      },
-                                      icon: Icon(Icons.exposure_neg_1),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: IconButton(
-                                      onPressed: (){
-
-                                      },
-                                      icon: Icon(Icons.delete),
-                                    ),
-                                  )
-                                ],
+                                },
+                                icon: Icon(Icons.delete),
                               ),
                             ],
                           ),

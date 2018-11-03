@@ -82,7 +82,6 @@ class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
     String clientId = order['user_id'].toString();
     String status = order['status'].toString();
 
-    print(status);
 
     return Card(
       elevation: 4.0,
@@ -136,48 +135,30 @@ class _AdminClientDetailPageState extends State<AdminClientDetailPage> {
                 SizedBox(height: 10.0,),
                 Container(height: 0.5, color: Colors.grey,),
                 SizedBox(height: 5.0,),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: IconButton(
-                        onPressed: (){
+                status == 'completed' ?
+                IconButton(
+                  onPressed: (){
+                        Firestore.instance.collection('orders').document(orderId)
+                            .delete().then((_){
+                           setState(() {
 
-                        },
-                        icon: Icon(Icons.plus_one),
-                      ),
-                    ),
-                    Expanded(
-                      child: IconButton(
-                        onPressed: (){
+                           });
+                        });
+                  },
+                  icon: Icon(Icons.delete ),
+                )
+                    :
+                IconButton(
+                  onPressed: (){
 
-                        },
-                        icon: Icon(Icons.exposure_neg_1),
-                      ),
-                    ),
-                    Expanded(
-                      child:
-                      status == 'completed' ?
-                      IconButton(
-                        onPressed: (){
+                      Firestore.instance.collection('orders').document(orderId)
+                          .setData({'status': "completed"}, merge: true).then((_){
+                            setState(() {
 
-                        },
-                        icon: Icon(Icons.delete ),
-                      )
-                          :
-                      IconButton(
-                        onPressed: (){
-
-                          Firestore.instance.collection('orders').document(orderId)
-                              .setData({'status': "completed"}, merge: true).then((_){
-                                setState(() {
-
-                                });
-                          });
-                        },
-                        icon: Icon(Icons.done ),
-                      ),
-                    )
-                  ],
+                            });
+                      });
+                  },
+                  icon: Icon(Icons.done ),
                 ),
               ],
             ),

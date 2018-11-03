@@ -32,8 +32,6 @@ class _CartPageState extends State<CartPage> {
 
     List<String> res = prefs.getStringList('cart');
 
-    //res == null ? commands = List() : commands = res;
-
     return res == null ? List() : res;
 
   }
@@ -221,6 +219,7 @@ class _CartPageState extends State<CartPage> {
         print("test2");
         await reference.add({
           "user_id": widget.user.uid,
+          "user_name": widget.user.displayName,
           "name": order.product.name,
           "price": order.product.currentPrice,
           "image_url": order.product.imageUrl,
