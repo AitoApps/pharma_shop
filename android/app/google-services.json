@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "718038542105",
+    "firebase_url": "https://pharma-shop.firebaseio.com",
+    "project_id": "pharma-shop",
+    "storage_bucket": "pharma-shop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718038542105:android:5b35c4e24a6f7cd6",
+        "android_client_info": {
+          "package_name": "com.aitoapp.pharmashop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718038542105-iugam2nltqm3ol9a95vfsthoceqv6bgc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aitoapp.pharmashop",
+            "certificate_hash": "7c5715ad2999ff388ee02bf9c01cb1e22a291817"
+          }
+        },
+        {
+          "client_id": "718038542105-vddp9m7d270su2v6e3c1pcs9ug6gt01f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnbRarZxzLGb3Vdg78BRxz6fvXclacwEg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "718038542105-vddp9m7d270su2v6e3c1pcs9ug6gt01f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
