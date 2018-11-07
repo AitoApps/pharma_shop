@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
@@ -8,8 +6,9 @@ class Product {
   final int originalPrice;
   final int discount;
   final String imageUrl;
+  bool selected;
 
-  Product({this.name, this.currentPrice, this.originalPrice, this.discount, this.imageUrl});
+  Product({this.name, this.currentPrice, this.originalPrice, this.discount, this.imageUrl, this.selected});
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -18,6 +17,7 @@ class Product {
       originalPrice: json['originalPrice'],
       discount: json['discount'],
       imageUrl: json['imageUrl'],
+      selected: json['selected']
     );
   }
 
@@ -27,7 +27,8 @@ class Product {
         'currentPrice': currentPrice,
         'originalPrice': originalPrice,
         'discount': discount,
-        'imageUrl': imageUrl
+        'imageUrl': imageUrl,
+        'selected': selected
       };
 
   Product.fromSnapshot(DocumentSnapshot snapshot)
@@ -35,7 +36,8 @@ class Product {
         currentPrice = snapshot['currentPrice'],
         originalPrice = snapshot['originalPrice'],
         discount = snapshot['discount'],
-        imageUrl = snapshot['imageUrl'];
+        imageUrl = snapshot['imageUrl'],
+        selected = snapshot['selected'];
 }
 
 class Commande {

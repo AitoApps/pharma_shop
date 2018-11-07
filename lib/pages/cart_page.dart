@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pharma_shop/widgets/drawer_menu.dart';
+import 'package:pharma_shop/model/cart.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import 'dart:convert';
 import 'dart:async';
@@ -81,7 +83,10 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(" ${commandes.length} Orders : $total_price Dh"),
+        title:
+            ScopedModelDescendant<CartModel>(builder: (context, child, model)=> Text(
+                " ${model.cartProducts.length.toString()} Orders : ${model.totalPrice.toString()} Dh"
+            )),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.done, size: 40.0, color: Colors.yellow,),
@@ -92,130 +97,122 @@ class _CartPageState extends State<CartPage> {
           )
         ],
       ),
-      drawer: DrawerMenu(user: widget.user,),
-      body: ListView.builder(
+     // drawer: DrawerMenu(user: widget.user,),
+      body: ScopedModelDescendant<CartModel>(builder: (context, child, model) =>
+          ListView.builder(
+              itemCount: model.cartProducts.length,
+              itemBuilder: (context, index) {
+                final commande = model.cartProducts[index];
+                return Card(
+                  elevation: 4.0,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
-          itemCount: commandes.length,
-          itemBuilder: (context, index) {
-            final commande = commandes[index];
-            return Card(
-              elevation: 4.0,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-
-                children: <Widget>[
-                  Container(
-                      width: 200.0,
-                      child: Image.asset('${commande.product.imageUrl}')
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          //color: Colors.green,
-                          child: Center(
-                            child: Text('${commande.product.name}', style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20.0
-                            ),),
-                          ),
-                        ),
-                        SizedBox(height: 30.0,),
-                        Row(
+                    children: <Widget>[
+                      Container(
+                          width: 200.0,
+                          child: Image.asset('${commande.product.imageUrl}')
+                      ),
+                      Expanded(
+                        child: Column(
                           children: <Widget>[
-                            Text('price       :', style: TextStyle(
-                              fontWeight: FontWeight.bold
-                            ),),
-                            SizedBox(width: 20.0,),
-                            Text('${commande.product.currentPrice} dh')
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text('quantity : ', style: TextStyle(
-                                fontWeight: FontWeight.bold
-                            ),),
-                            SizedBox(width: 20.0,),
-                            Text('${commande.quantity} ')
-                          ],
-                        ),
-                       SizedBox(height: 20.0,),
-                        Row(
-                          children: <Widget>[
-                            Text('facture   :', style: TextStyle(
-                                fontWeight: FontWeight.bold
-                            ),),
-                            SizedBox(width: 20.0,),
-                            Text('${commande.product.currentPrice * commande.quantity} dh')
-                          ],
-                        ),
-                        SizedBox(height: 10.0,),
-                        Container(height: 0.5, color: Colors.grey,),
-                        SizedBox(height: 5.0,),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: IconButton(
-                                onPressed: (){
-                                  setState(() {
-                                    commande.quantity += 1;
-                                    total_price = 0;
-                                    commandes.forEach((commande){
-                                      total_price += commande.product.currentPrice * commande.quantity;
-                                    });
-                                  });
-
-                                },
-                                icon: Icon(Icons.plus_one),
+                            Container(
+                              //color: Colors.green,
+                              child: Center(
+                                child: Text('${commande.product.name}', style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20.0
+                                ),),
                               ),
                             ),
-                            Expanded(
-                              child: IconButton(
-                                onPressed: (){
-                                  setState(() {
-                                    commande.quantity -= 1;
-                                    total_price = 0;
-                                    commandes.forEach((commande){
-                                      total_price += commande.product.currentPrice * commande.quantity;
-                                    });
-                                  });
-                                },
-                                icon: Icon(Icons.exposure_neg_1),
-                              ),
+                            SizedBox(height: 30.0,),
+                            Row(
+                              children: <Widget>[
+                                Text('price       :', style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                ),),
+                                SizedBox(width: 20.0,),
+                                Text('${commande.product.currentPrice} dh')
+                              ],
                             ),
-                            Expanded(
-                              child: IconButton(
-                                onPressed: (){
-                                  setState(() {
-                                    commandes.remove(commande);
-                                    total_price = 0;
-                                    commandes.forEach((commande){
-                                      total_price += commande.product.currentPrice * commande.quantity;
-                                    });
-                                  });
-                                },
-                                icon: Icon(Icons.delete),
-                              ),
-                            )
+                            Row(
+                              children: <Widget>[
+                                Text('quantity : ', style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                ),),
+                                SizedBox(width: 20.0,),
+                                Text('${commande.quantity} ')
+                              ],
+                            ),
+                            SizedBox(height: 20.0,),
+                            Row(
+                              children: <Widget>[
+                                Text('facture   :', style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                ),),
+                                SizedBox(width: 20.0,),
+                                Text('${commande.product.currentPrice * commande.quantity} dh')
+                              ],
+                            ),
+                            SizedBox(height: 10.0,),
+                            Container(height: 0.5, color: Colors.grey,),
+                            SizedBox(height: 5.0,),
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child:
+                                  ScopedModelDescendant<CartModel>(builder: (context, child, model) =>
+                                  IconButton(
+                                    onPressed: (){
+                                       model.incrementQuantity(commande);
+                                    },
+                                    icon: Icon(Icons.plus_one),
+                                  )),
+                                ),
+                                Expanded(
+                                  child: ScopedModelDescendant<CartModel>(builder: (context, child, model) =>
+                                      IconButton(
+                                        onPressed: (){
+                                          model.decrementQuantity(commande);
+                                        },
+                                        icon: Icon(Icons.exposure_neg_1),
+                                      )),
+                                ),
+                                Expanded(
+                                  child: ScopedModelDescendant<CartModel>(builder: (context, child, model){
+                                    return IconButton(
+                                      onPressed: (){
+                                        model.removeFromCart(commande);
+                                      },
+                                      icon: Icon(Icons.delete),
+                                    );
+                                  })
+                                )
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          }
-      ),
+                );
+              }
+          ),
+          )
     );
   }
 
   Future send_order() async {
              // push to firestore
     print("test1");
+
+    final orders = CartModel.of(context).cartProducts;
+
+    print(orders);
+
     Firestore.instance.runTransaction((transaction) async {
       CollectionReference reference = Firestore.instance.collection('orders');
 
-      Future.forEach(this.commandes, (Commande order) async {
+      Future.forEach(CartModel.of(context).cartProducts, (Commande order) async {
         print("test2");
         await reference.add({
           "user_id": widget.user.uid,
@@ -229,8 +226,8 @@ class _CartPageState extends State<CartPage> {
         });
       }).then((_){
         print("test3");
-        _clearCartProducts();
-       Navigator.of(context).pop();
+        CartModel.of(context).clearCart();
+        Navigator.of(context).pop();
         print("test4");
       });
     });

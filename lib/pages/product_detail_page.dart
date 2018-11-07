@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pharma_shop/auth.dart';
 import 'package:pharma_shop/widgets/cart_product_detail.dart';
+import 'package:pharma_shop/model/cart.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import 'dart:convert';
 
@@ -20,6 +22,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   List<String> commands;
   FirebaseUser user;
+
   _setCartProducts(int quantity) async {
 
     final commande = Commande(product: widget.product, quantity: quantity, clientId: user.uid);
@@ -81,7 +84,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Product Detail"),
+        title: Text("Product Detail "),
       ),
       body: ListView(
         children: <Widget>[
@@ -99,17 +102,24 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
           ),
 
-          RaisedButton(
-            color: Colors.green,
-            onPressed: (){
+            ScopedModelDescendant<CartModel>(builder: (context, child, model)=>
+                RaisedButton(
+                  color: Colors.green,
+                  onPressed: (){
 
-              _setCartProducts(20);
+                   // _setCartProducts(20);
 
-              Navigator.of(context).pop();
-            },
-            child: Text("ajouter au panier", style: TextStyle(fontSize: 20.0, color: Colors.white)),
-          )
+                    Commande commande = Commande(product: widget.product, quantity: 2, clientId: user.uid);
 
+                    model.addToCart(commande);
+
+                    print(model.cartProducts.length);
+
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("ajouter au panier", style: TextStyle(fontSize: 20.0, color: Colors.white)),
+                ),
+            )
         ],
       ),
     );
